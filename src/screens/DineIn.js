@@ -1,5 +1,5 @@
 import React, { Component,} from 'react';
-import {FlatList, StyleSheet, Text, View, TouchableOpacity} from "react-native";
+import {FlatList, StyleSheet, Text, View, TouchableOpacity, AsyncStorage} from "react-native";
 import Utills from "../components/Utills";
 import MainMenuCategoryItem from "../components/MainMenuCategoryItem";
 import {Icon} from "react-native-elements";
@@ -49,6 +49,17 @@ export default class DineIn extends Component {
         restaurant:res[0]
       })
     })
+    this.setUpBasket().then((save) => {
+      console.log('basket creation successfull')
+    })
+  }
+
+  setUpBasket = async () => {
+    try {
+      await AsyncStorage.setItem('myBasket', JSON.stringify([]));
+    } catch (error) {
+      // Error saving data
+    }
   }
 
   selectFood(type) {

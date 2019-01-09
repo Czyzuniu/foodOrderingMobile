@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {AsyncStorage} from "react-native";
 
 class Utills {
 
@@ -18,6 +19,27 @@ class Utills {
   toTimestamp(strDate) {
     let datum = Date.parse(strDate);
     return datum / 1000;
+  }
+
+  async retrieveItem(key) {
+    try {
+      const retrievedItem =  await AsyncStorage.getItem(key);
+      const item = JSON.parse(retrievedItem);
+      return item;
+    } catch (error) {
+      console.log(error.message);
+    }
+    return
+  }
+
+  async saveItem(key,data) {
+    try {
+      const savedItem =  await AsyncStorage.setItem(key, JSON.stringify(data))
+      return savedItem;
+    } catch (error) {
+      console.log(error.message);
+    }
+    return
   }
 
 

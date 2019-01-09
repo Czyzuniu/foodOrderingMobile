@@ -4,16 +4,29 @@ import { Header, Icon} from 'react-native-elements'
 import {
   StyleSheet,
   View,
+  Text,
+  DeviceEventEmitter,
+  TouchableOpacity
 } from 'react-native';
 import StatusBar from './StatusBar'
 import { SearchBar } from 'react-native-elements'
+import IconBadge from 'react-native-icon-badge';
 
 import { withNavigation } from 'react-navigation';
+import Utills from "./Utills";
 
 class HeaderBar extends React.Component {
 
   constructor(props) {
     super(props)
+
+    this.state = {
+      basketSize:0
+    }
+
+    DeviceEventEmitter.addListener('addedToBasket', () => {
+      Utills.retrieveItem('myBasket').then(data => this.setState({basketSize:data.length}))
+    });
   }
 
   renderLeftComponent() {
@@ -43,6 +56,41 @@ class HeaderBar extends React.Component {
     }
   }
 
+  renderCenterComponent(){
+    if (this.props.renderCenterComponent) {
+      return (
+        <SearchBar
+          lightTheme
+          icon={{ type: 'MaterialIcons', name: 'search' }}
+          placeholder='Search menu'
+          containerStyle={{backgroundColor:'transparent', borderTopWidth:0, borderBottomWidth:0, minWidth:200, maxWidth:250}}
+        />
+      )
+    }
+  }
+
+  renderRightComponent(){
+    if (this.props.renderRightComponent) {
+      return (
+        <TouchableOpacity onPress={() => {this.props.navigation.push('Checkout')}}>
+          <IconBadge
+            MainElement={
+              <Icon
+                name='shopping-cart'
+                type='MaterialIcons'
+                size={45}
+              />
+            }
+            BadgeElement={
+              <Text style={{color:'#FFFFFF'}}>{this.state.basketSize}</Text>
+            }
+            Hidden={this.state.basketSize==0}
+          />
+        </TouchableOpacity>
+      )
+    }
+  }
+
   render() {
     return (
       <View>
@@ -50,19 +98,10 @@ class HeaderBar extends React.Component {
         <Header
           leftComponent={this.renderLeftComponent()}
           centerComponent={
-            <SearchBar
-              lightTheme
-              icon={{ type: 'MaterialIcons', name: 'search' }}
-              placeholder='Search menu'
-              containerStyle={{backgroundColor:'transparent', borderTopWidth:0, borderBottomWidth:0, minWidth:200, maxWidth:250}}
-            />
+            this.renderCenterComponent()
           }
           rightComponent={
-            <Icon
-            name='shopping-cart'
-            type='MaterialIcons'
-            size={30}
-          />
+           this.renderRightComponent()
           }
           outerContainerStyles={{ backgroundColor: '#1795ee' }}
         />

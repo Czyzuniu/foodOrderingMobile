@@ -6,10 +6,9 @@ import {createStackNavigator} from 'react-navigation';
 import {createDrawerNavigator} from 'react-navigation';
 import DineIn from "../screens/DineIn";
 import SelectFood from "../screens/SelectFood";
+import Checkout from "../screens/Checkout";
 
 
-
-// wrap your screen inside the drawer into StackNavigator
 const SelectRestaurantNavigator = createStackNavigator({
   SelectRestaurant: {
     screen: SelectRestaurant,
@@ -20,13 +19,19 @@ const SelectRestaurantNavigator = createStackNavigator({
   DineIn: {
     screen:DineIn,
     navigationOptions: {
-      header:<HeaderBar/>
+      header:<HeaderBar renderCenterComponent={true} renderRightComponent={true}/>
     }
   },
   SelectFood: {
     screen:SelectFood,
     navigationOptions: {
-      header:<HeaderBar backButton={true}/>
+      header:<HeaderBar backButton={true} renderCenterComponent={true} renderRightComponent={true}/>
+    }
+  },
+  Checkout: {
+    screen:Checkout,
+    navigationOptions: {
+      header:<HeaderBar backButton={true} />
     }
   },
 });
