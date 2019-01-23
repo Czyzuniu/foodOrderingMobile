@@ -17,7 +17,7 @@ const menuItems = [
     path:require('../assets/img/food.jpg')
   },
   {
-    name:'Deserts',
+    name:'Desserts',
     value:'MT_DSRT',
     path:require('..//assets/img/deserts.jpg')
   },
