@@ -1,10 +1,11 @@
 import React, { Component,} from 'react';
-import {Text, View, StyleSheet} from "react-native";
+import {View, StyleSheet, Image} from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-import Slider from "react-native-slider";
-import { CheckBox } from 'react-native-elements'
+import {Button, CheckBox, Icon, Overlay, Text} from 'react-native-elements'
 import Utills from "../components/Utills";
-import MarkerCallout from '../components/MarkerCallout'
+import Carousel, {Pagination} from 'react-native-snap-carousel'
+import { Rating, AirbnbRating } from 'react-native-elements';
+import RestaurantOverlay from "../components/RestaurantOverlay";
 
 export default class SelectRestaurant extends Component {
 
@@ -19,12 +20,22 @@ export default class SelectRestaurant extends Component {
       longitudeDelta: 0.0121,
       radius:1,
       showByPref:true,
-      restaurants:[]
+      restaurants:[],
+      selectedRestaurant: {
+        data:null,
+        images:null
+      },
+      showOverlay:false
     }
+
   }
 
   componentDidMount() {
+    this.setUpFavourites()
     navigator.geolocation.getCurrentPosition((data) => {
+
+      //Utills.clearStorage()
+
       console.log('success location', data)
       this.setState({
         LATLNG:{
@@ -32,21 +43,27 @@ export default class SelectRestaurant extends Component {
           longitude:data.coords.longitude,
         }
       })
-      // Utills.postData(`${Utills.endPoint}/getRestaurants`, {currentLocation:this.state.LATLNG}).then((data) => {
-      //   console.log(data)
-      // }).catch((err) => {
-      //   console.log(err)
-      // })
-
       Utills.getData(`${Utills.endPoint}/getRestaurants?lat=${this.state.LATLNG.latitude}&lng=${this.state.LATLNG.longitude}`).then((data) => {
         let parsedData = JSON.parse(data)
         this.setState({restaurants:parsedData.results})
-        console.log(this.state)
       })
     })
   }
 
+  setUpFavourites() {
+    Utills.retrieveItem('favouritePlaces').then((data) => {
+      if (!data) {
+        Utills.saveItem('favouritePlaces', [])
+      }
+    })
+  }
+
   render() {
+    const restaurantData = this.state.selectedRestaurant.data
+    const restaurantImages = this.state.selectedRestaurant.images
+
+    console.log(restaurantData)
+
     return (
       <View style={styles.container}>
         <MapView
@@ -63,49 +80,70 @@ export default class SelectRestaurant extends Component {
           showsScale={true}
           zoomEnabled={true}
         >
-          {/*<MapView.Circle*/}
-            {/*center = { this.state.LATLNG }*/}
-            {/*radius = { this.state.radius * 1609.34 }*/}
-            {/*strokeWidth = { 1 }*/}
-            {/*strokeColor = { '#1a66ff' }*/}
-            {/*fillColor = { 'rgba(230,238,255,0.5)' }*/}
-          {/*/>*/}
           {this.state.restaurants.map(marker => (
             <Marker
               coordinate={{
-                latitude: marker.restaurant.restaurantLat,
-                longitude: marker.restaurant.restaurantLong,
+                latitude: marker.restaurant.RESTAURANT_LATITUDE,
+                longitude: marker.restaurant.RESTAURANT_LONGITUDE,
               }}
               title={marker.title}
               description={marker.description}
               calloutOffset={{ x: 0, y: 55 }}
+              onPress={() => {
+                Utills.getData(`${Utills.endPoint}/getRestaurant?id=${marker.restaurant.RESTAURANT_ID}`).then((data) => {
+                  const finalImages = []
+                  let promises = data.images.map((img) => {
+                    return new Promise((res) => {
+                      finalImages.push(`${Utills.endPoint}/${img.PATH}`)
+                      res()
+                    })
+                  })
+
+                  Promise.all(promises).then(() => {
+                    this.setState({
+                      selectedRestaurant:{
+                        data:data.resData,
+                        images:finalImages,
+                      },
+                      showOverlay:true
+                    })
+                  })
+                })
+              }
+              }
             >
-              <MapView.Callout tooltip style={styles.callout}>
-                <MarkerCallout
-                  name={marker.restaurant.restaurantName}
-                  restaurantId={marker.restaurant.restaurantId}
-                  navigation={this.props.navigation}
-                />
-              </MapView.Callout>
             </Marker>
           ))}
         </MapView>
         <View style={styles.sliderContainer}>
-          {/*<Slider*/}
-            {/*value={this.state.radius}*/}
-            {/*onValueChange= {*/}
-              {/*value => {this.setState({ radius:value })}*/}
-            {/*}*/}
-          {/*/>*/}
-          {/*<Text>*/}
-            {/*Radius: {this.state.radius}*/}
-          {/*</Text>*/}
           <CheckBox
             title='Show by food preference?'
             checked={this.state.showByPref}
             onPress={() => this.setState({showByPref: !this.state.showByPref})}
           />
         </View>
+        {restaurantData &&
+        <RestaurantOverlay
+          showOverlay={this.state.showOverlay}
+          restaurantData={restaurantData}
+          restaurantImages={restaurantImages}
+          onClose={() => {
+            this.setState({
+              showOverlay: false
+            })
+          }
+          }
+          onDineIn={() => {
+            if (restaurantData) {
+              this.props.navigation.push('DineIn', {restaurantId: restaurantData.RESTAURANT_ID})
+              this.setState({
+                showOverlay: false
+              })
+            }
+          }
+          }
+        />
+        }
       </View>
     );
   }

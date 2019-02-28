@@ -92,10 +92,12 @@ export default class SelectFood extends Component {
                 <Text style={{fontWeight:'bold'}}>£{item.PRODUCT_PRICE}</Text>
               </View>
             }
+            pad={5}
+            bottomDivider={true}
             subtitle={
               <Text>{item.PRODUCT_DESCRIPTION}.</Text>
             }
-            chevronColor="black"
+            chevron={false}
             onPress={() => {
               this.setState({selectedProduct:item})
             }}

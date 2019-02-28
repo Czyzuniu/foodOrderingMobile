@@ -23,7 +23,7 @@ export default class MarkerCallout extends Component {
               containerViewStyle={styles.button}
               textStyle={{fontSize:14}}
               onPress={() => {
-                this.props.navigation.push('DineIn', {restaurantId:this.props.restaurantId})
+                alert('what')
               }}
             />
             <Button
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   button: {
-    marginTop:5,
+    marginTop:5
   }
 });
 

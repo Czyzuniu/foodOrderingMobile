@@ -42,6 +42,15 @@ class Utills {
     return
   }
 
+  async clearStorage() {
+    try {
+      await AsyncStorage.clear();
+    } catch (error) {
+      console.log(error.message);
+    }
+    return
+  }
+
 
   postData(url, data) {
     return new Promise((resolve, reject) => {

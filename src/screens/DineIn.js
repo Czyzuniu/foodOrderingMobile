@@ -3,6 +3,7 @@ import {FlatList, StyleSheet, Text, View, TouchableOpacity, AsyncStorage} from "
 import Utills from "../components/Utills";
 import MainMenuCategoryItem from "../components/MainMenuCategoryItem";
 import {Icon} from "react-native-elements";
+import Snackbar from 'react-native-snackbar';
 
 
 const menuItems = [
@@ -19,17 +20,17 @@ const menuItems = [
   {
     name:'Desserts',
     value:'MT_DSRT',
-    path:require('..//assets/img/deserts.jpg')
+    path:require('../assets/img/deserts.jpg')
   },
   {
     name:'Drinks',
     value:'MT_DRINK',
-    path:require('..//assets/img/drinks.jpg')
+    path:require('../assets/img/drinks.jpg')
   },
   {
     name:'Snacks',
     value:'MT_SNK',
-    path:require('..//assets/img/snack.jpg')
+    path:require('../assets/img/snack.jpg')
   }
 ]
 
@@ -38,15 +39,26 @@ export default class DineIn extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      restaurant:null
+      restaurant:null,
+      isFavourite:false
     }
     this.restaurantId = this.props.navigation.getParam('restaurantId')
+
+    Utills.retrieveItem('favouritePlaces').then((data) => {
+      data.map((place) => {
+        if (place.restaurantId === this.restaurantId) {
+          this.setState({
+            isFavourite:true
+          })
+        }
+      })
+    })
   }
 
   componentDidMount() {
     Utills.getData(`${Utills.endPoint}/getRestaurant?id=${this.restaurantId}`).then((res) => {
       this.setState({
-        restaurant:res[0]
+        restaurant:res.resData
       })
     })
     this.setUpBasket().then((save) => {
@@ -67,16 +79,70 @@ export default class DineIn extends Component {
   }
 
   render() {
+
+    const favouriteIcon = (
+      <Icon
+        name='favorite'
+        type='MaterialIcons'
+        color={'red'}
+        size={30}
+        onPress={() => {
+            Utills.retrieveItem('favouritePlaces').then((data) => {
+              let inx = null
+              data.forEach((elem, index) => {
+                if (elem.restaurantId === this.restaurantId) {
+                  inx = index
+                }
+              })
+              data.splice(inx, 1)
+              Utills.saveItem('favouritePlaces', data).then(() => {
+                this.setState({
+                  isFavourite:false
+                })
+                Snackbar.show({
+                  title: 'Removed from favourite places!',
+                  duration: Snackbar.LENGTH_SHORT,
+                });
+              })
+            })
+          }
+        }
+      />
+    )
+
+    const notFavourite = (
+      <Icon
+        name='favorite-border'
+        color={'red'}
+        type='MaterialIcons'
+        size={30}
+        onPress={() =>
+          {
+            Utills.retrieveItem('favouritePlaces').then((data) => {
+              let places = data
+              places.push({restaurantId: this.restaurantId})
+              Utills.saveItem('favouritePlaces', places).then(() => {
+                this.setState({
+                  isFavourite: true
+                })
+
+                Snackbar.show({
+                  title: 'Added to favourite places!',
+                  duration: Snackbar.LENGTH_SHORT,
+                });
+              })
+            })
+          }
+        }
+      />
+    )
+
     return (
       <View style={styles.container}>
         {this.state.restaurant &&
           <View style={styles.header}>
               <Text style={{fontSize:25}}>Welcome to {this.state.restaurant.RESTAURANT_NAME}</Text>
-            <Icon
-              name='favorite-border'
-              type='MaterialIcons'
-              size={30}
-            />
+            {this.state.isFavourite ? favouriteIcon : notFavourite}
           </View>
         }
         <View style={styles.categories}>

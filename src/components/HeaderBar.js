@@ -21,7 +21,8 @@ class HeaderBar extends React.Component {
     super(props)
 
     this.state = {
-      basketSize:0
+      basketSize:0,
+      searchField:''
     }
 
     DeviceEventEmitter.addListener('addedToBasket', () => {
@@ -61,9 +62,11 @@ class HeaderBar extends React.Component {
       return (
         <SearchBar
           lightTheme
+          value={this.state.searchField}
           icon={{ type: 'MaterialIcons', name: 'search' }}
+          onChangeText={(search) => this.setState({searchField: search})}
           placeholder='Search menu'
-          containerStyle={{backgroundColor:'transparent', borderTopWidth:0, borderBottomWidth:0, minWidth:200, maxWidth:250}}
+          containerStyle={{backgroundColor:'transparent', borderTopWidth:0, borderBottomWidth:0, width:'100%', display:'flex', alignSelf:'center', marginBottom:5}}
         />
       )
     }
@@ -78,7 +81,7 @@ class HeaderBar extends React.Component {
               <Icon
                 name='shopping-cart'
                 type='MaterialIcons'
-                size={45}
+                size={30}
               />
             }
             BadgeElement={

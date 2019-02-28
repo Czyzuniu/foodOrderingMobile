@@ -1,5 +1,5 @@
 import React, { Component,} from 'react';
-import {FlatList, StyleSheet, Text, View, ScrollView, Image, TouchableOpacity} from "react-native";
+import {FlatList, StyleSheet, Text, View, ScrollView, Image, TouchableOpacity,ActivityIndicator} from "react-native";
 import { AsyncStorage } from "react-native"
 import Utills from "../components/Utills";
 import {Icon, ListItem} from "react-native-elements";
@@ -82,13 +82,12 @@ export default class Checkout extends Component {
 
   order = () => {
     Utills.postData(`${Utills.endPoint}/createOrder`, {orderedItems:this.rawBasketData}).then((res) => {
-      console.log(res)
+
     })
   }
 
 
   deleteFromBasket = (item) => {
-    console.log('to dziala?')
     Utills.retrieveItem('myBasket').then((data) => {
       let myBasket = data
       let indexToDelete = null
@@ -100,8 +99,6 @@ export default class Checkout extends Component {
       })
 
       myBasket.splice(indexToDelete, 1)
-
-      //console.log(myBasket)
 
       Utills.saveItem('myBasket', myBasket).then((res) => {
         this.sortOutBasket()
@@ -155,6 +152,10 @@ export default class Checkout extends Component {
             <Button style={{container: {margin: 10}}} raised primary text="Pay by card & order" onPress={this.order}/>
           </View> : <Text>You have no items</Text>
         }
+
+        {/*<View style={{position:'absolute'}}>*/}
+          {/*<ActivityIndicator size="large" color="#0000ff" />*/}
+        {/*</View>*/}
       </View>
     );
   }
