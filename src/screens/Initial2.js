@@ -15,33 +15,24 @@ export default class Initial2 extends Component {
 
     this.state = {
       loading:true,
-      allergies: [
-        {
-          name:'Eggs',
-          selected:false
-        },
-        {
-          name:'Peanuts',
-          selected:false
-        },
-        {
-          name:'Shellfish',
-          selected:false
-        },
-        {
-          name:'Wheat',
-          selected:false
-        },
-        {
-          name:'Soy',
-          selected:false
-        }
-      ],
+      allergies: []
     }
   }
 
   componentDidMount() {
     SplashScreen.hide();
+
+    Utills.getFoodAllergies().then((data) => {
+      data.map((cat) => {
+        cat.selected = false
+      })
+      this.setState({
+        allergies: data
+      })
+
+      this.setAlergies()
+    })
+
     this.props.navigation.addListener(
       'willFocus',
       payload => {
@@ -82,7 +73,7 @@ export default class Initial2 extends Component {
                 this.context.setProfileAllergies(items)
                 this.setState({allergies:items})
               }}>
-                <Tile text={c.item.name} selected={c.item.selected}></Tile>
+                <Tile text={c.item.FOOD_ALLERGY_DESCRIPTION} selected={c.item.selected}></Tile>
               </TouchableOpacity>
             )}
             numColumns={3}

@@ -1,10 +1,9 @@
 import React, { Component,} from 'react';
 import {FlatList, StyleSheet, Text, View,DeviceEventEmitter} from "react-native";
 import Utills from "../components/Utills";
-import {Icon, ListItem} from 'react-native-elements'
+import {Icon, ListItem, Input} from 'react-native-elements'
 import { Dialog, DialogStackedActions } from 'react-native-material-ui';
 import NumericInput from 'react-native-numeric-input'
-import { AsyncStorage } from "react-native"
 
 
 export default class SelectFood extends Component {
@@ -16,7 +15,11 @@ export default class SelectFood extends Component {
       foodCategory:this.props.navigation.getParam('foodCategory'),
       restaurantId:this.props.navigation.getParam('restaurantId'),
       selectedProduct:null,
-      quantity:1
+      showCustomizeDialog:false,
+      customizedNote:'',
+      quantity:1,
+      showAllergyDialog:false,
+      allergyItem:null
     }
   }
 
@@ -45,6 +48,51 @@ export default class SelectFood extends Component {
   }
 
   render() {
+
+    const renderFoodItems = (
+      <FlatList
+        data={this.state.foodItems}
+        renderItem={({item}) => (
+          <ListItem
+            containerStyle={{margin: 15}}
+            key={item.name}
+            title={
+              <View style={styles.titleContainer}>
+                <Text style={{fontSize: 20}}>{item.PRODUCT_NAME}</Text>
+                <Text style={{fontWeight: 'bold'}}>£{item.PRODUCT_PRICE}</Text>
+              </View>
+            }
+            pad={5}
+            bottomDivider={true}
+            subtitle={
+              <View style={styles.titleContainer}>
+                <Text>{item.PRODUCT_DESCRIPTION}.</Text>
+                <Icon
+                  name='local-florist'
+                  type='MaterialIcons'
+                  color='red'
+                  onPress={() => {
+                      this.setState({showAllergyDialog: true, allergyItem:item})
+                    }
+                  }
+                />
+              </View>
+            }
+            chevron={false}
+            onPress={() => {
+              this.setState({selectedProduct: item})
+            }}
+          />)}
+      />
+    )
+
+    const renderNoFood = (
+      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+        <Text>We do not have any food in this category :(</Text>
+      </View>
+    )
+
+
     return (
       <View style={styles.container}>
         {this.state.selectedProduct &&
@@ -73,6 +121,10 @@ export default class SelectFood extends Component {
                       })
                     } else if (action == 'Add to basket') {
                       this.addToBasket()
+                    } else {
+                      this.setState({
+                        showCustomizeDialog:true
+                      })
                     }
                   }}
                 />
@@ -80,29 +132,66 @@ export default class SelectFood extends Component {
             </Dialog>
           </View>
         }
-        <FlatList
-          data={this.state.foodItems}
-          renderItem={({item}) => (
-            <ListItem
-            containerStyle={{margin:15}}
-            key={item.name}
-            title={
-              <View style={styles.titleContainer}>
-                <Text style={{fontSize:20}}>{item.PRODUCT_NAME}</Text>
-                <Text style={{fontWeight:'bold'}}>£{item.PRODUCT_PRICE}</Text>
+        {this.state.foodItems.length ? renderFoodItems : renderNoFood}
+        {this.state.showCustomizeDialog &&
+        <View style={styles.loading}>
+          <Dialog>
+            <Dialog.Content>
+              <View style={{flexDirection: 'column', justifyContent: 'center'}}>
+                <Text style={{fontWeight: 'bold', fontSize: 15}}>Enter any ingredient's which you would like to add/remove </Text>
+                <View style={{marginTop: 25}}>
+                  <Input
+                    placeholder='no salad, no ketchup....'
+                    value={this.state.customizedNote}
+                    onChangeText={(text) => {this.setState({customizedNote: text})}}
+                  />
+                </View>
               </View>
-            }
-            pad={5}
-            bottomDivider={true}
-            subtitle={
-              <Text>{item.PRODUCT_DESCRIPTION}.</Text>
-            }
-            chevron={false}
-            onPress={() => {
-              this.setState({selectedProduct:item})
-            }}
-          />)}
-        />
+            </Dialog.Content>
+            <Dialog.Actions>
+              <DialogStackedActions
+                actions={['Cancel', 'Ok']}
+                onActionPress={(action) => {
+                  this.setState({
+                    showCustomizeDialog: false
+                  })
+                  if (action == 'Ok') {
+                    let selectedProduct = this.state.selectedProduct
+                    selectedProduct.customized = this.state.customizedNote
+                  }
+                }}
+              />
+            </Dialog.Actions>
+          </Dialog>
+        </View>
+        }
+        {this.state.showAllergyDialog &&
+        <View style={styles.loading}>
+          <Dialog>
+            <Dialog.Content>
+              <View style={{flexDirection: 'column', justifyContent: 'center'}}>
+                <Text style={{fontWeight: 'bold', fontSize: 15}}>List of allergies for {this.state.allergyItem.PRODUCT_NAME}</Text>
+                <View style={{marginTop: 25}}>
+                  {this.state.allergyItem.allergies.map((a) => {
+                    return <Text>{a.FOOD_ALLERGY_DESCRIPTION}</Text>
+                  })}
+                </View>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <DialogStackedActions
+                actions={['Ok']}
+                onActionPress={(action) => {
+                  this.setState({
+                    showAllergyDialog: false,
+                    allergyItem:null
+                  })
+                }}
+              />
+            </Dialog.Actions>
+          </Dialog>
+        </View>
+        }
       </View>
     );
   }

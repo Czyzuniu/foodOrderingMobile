@@ -6,201 +6,7 @@ import BurgerLoading from "../components/BurgerLoading";
 import Tile from "../components/Tile";
 import AppContext from "../components/AppContext";
 import Initial from "./Initial";
-
-
-const cousines = [
-  {
-    name:'American'
-  },
-  {
-    name:'British'
-  },
-  {
-    name:'Polish'
-  },
-  {
-    name:'Mexican'
-  },
-  {
-    name:'Spanish'
-  },
-  {
-    name:'Chinese'
-  },
-  {
-    name:'American'
-  },
-  {
-    name:'British'
-  },
-  {
-    name:'Polish'
-  },
-  {
-    name:'Mexican'
-  },
-  {
-    name:'Spanish'
-  },
-  {
-    name:'Chinese'
-  }
-  ]
-  // "Algerian",
-  // "Alsatian",
-  // "American",
-  // "Armenian",
-  // "Argentine",
-  // "Asian",
-  // "Australian",
-  // "Austrian",
-  // "Auvergne"
-
-  // "Bagels",
-  // "Bakery",
-  // "Bangladeshi",
-  // "Barbecue",
-  // "Belgian",
-  // "Bistro",
-  // "Brazilian",
-  // "British",
-  // "Burgers",
-  // "Burgundy",
-  // "Burmese",
-  // "Cafe",
-  // "Cajun",
-  // "Californian",
-  // "Calzones",
-  // "Cambodian",
-  // "Caribbean",
-  // "Cheesesteaks",
-  // "Chicken",
-  // "Chilean",
-  // "Chinese",
-  // "Chowder",
-  // "Coffee",
-  // "Colombian",
-  // "Contemporary",
-  // "Continental",
-  // "Corsica",
-  // "Creole",
-  // "Crepes",
-  // "Cuban",
-  // "Cuban",
-  // "Czech",
-  // "Deli",
-  // "Dim Sum",
-  // "Diner",
-  // "Dominican",
-  // "Donuts",
-  // "Dutch",
-  // "Eastern European",
-  // "Eclectic",
-  // "Egyptian",
-  // "English",
-  // "Ethiopian",
-  // "Ecuadorean",
-  // "European",
-  // "Fast Food",
-  // "Filipino",
-  // "Fish and Chips",
-  // "Fondue",
-  // "French",
-  // "Frozen Yogurt",
-  // "Fusion",
-  // "Gastropub",
-  // "German",
-  // "Greek",
-  // "Grill",
-  // "Gyros",
-  // "Haitian",
-  // "Halal",
-  // "Hawaiian",
-  // "Healthy",
-  // "Hot Dogs",
-  // "Ice Cream",
-  // "Indian",
-  // "Indonesian",
-  // "International",
-  // "Irish",
-  // "Israeli",
-  // "Italian",
-  // "Jamaican",
-  // "Japanese",
-  // "Juices",
-  // "Korean",
-  // "Korean Barbeque",
-  // "Kosher",
-  // "Latin",
-  // "Latin American",
-  // "Lebanese",
-  // "Lyonnais",
-  // "Malaysian",
-  // "Mediterranean",
-  // "Mexican",
-  // "Middle Eastern",
-  // "Mongolian",
-  // "Moroccan",
-  // "Nepalese",
-  // "Noodle Bar",
-  // "Norwegian",
-  // "Organic",
-  // "Oysters",
-  // "Pacific Rim",
-  // "Pakistani",
-  // "Pan Asian",
-  // "Pasta",
-  // "Pastries",
-  // "Persian",
-  // "Peruvian",
-  // "Pho",
-  // "Pizza",
-  // "Polish",
-  // "Polynesian",
-  // "Portuguese",
-  // "Provençal",
-  // "Pub Food",
-  // "Puerto Rican",
-  // "Raw",
-  // "Ribs",
-  // "Russian",
-  // "Salad",
-  // "Salvadoran",
-  // "Sandwiches",
-  // "Savoy",
-  // "Scandinavian",
-  // "Seafood",
-  // "Senegalese",
-  // "Singaporean",
-  // "Smoothies",
-  // "Soul Food",
-  // "Soup",
-  // "South American",
-  // "South African",
-  // "South Pacific",
-  // "Southern",
-  // "Southwestern",
-  // "Spanish",
-  // "Steak",
-  // "Steakhouse",
-  // "Subs",
-  // "Sushi",
-  // "Taiwanese",
-  // "Tapas",
-  // "Tea",
-  // "Tex Mex",
-  // "Thai",
-  // "Tibetan",
-  // "Traditional",
-  // "Tunisian",
-  // "Turkish",
-  // "Ukrainian",
-  // "Vegan",
-  // "Vegetarian",
-  // "Venezuelan",
-  // "Vietnamese",
-  // "Wings",
-  // "Wraps"
+import Utills from "../components/Utills";
 
 
 export default class Initial1 extends Component {
@@ -210,37 +16,24 @@ export default class Initial1 extends Component {
 
     this.state = {
       loading:true,
-      cousines:[
-        {
-          name:'American',
-          selected:false
-        },
-        {
-          name:'British',
-          selected:false
-        },
-        {
-          name:'Polish',
-          selected:false
-        },
-        {
-          name:'Mexican',
-          selected:false
-        },
-        {
-          name:'Spanish',
-          selected:false
-        },
-        {
-          name:'Chinese',
-          selected:false
-        }
-      ]
+      cousines:[]
     }
   }
 
   componentDidMount() {
     SplashScreen.hide();
+
+    Utills.getFoodCategories().then((data) => {
+      data.map((cat) => {
+        cat.selected = false
+      })
+      this.setState({
+        cousines: data
+      })
+
+      this.setFavouriteCategories()
+    })
+
     this.props.navigation.addListener(
       'willFocus',
       payload => {
@@ -249,9 +42,9 @@ export default class Initial1 extends Component {
     );
   }
 
-
   setFavouriteCategories() {
     if (this.context.profile.cuisines.length) {
+      console.log(this.context.profile.cuisines)
       this.setState({
         cousines:this.context.profile.cuisines
       })
@@ -276,19 +69,21 @@ export default class Initial1 extends Component {
           <FlatList
           data={this.state.cousines}
           renderItem={(c) => (
-            <TouchableOpacity onPress={() => {
-              let items = this.state.cousines
-              let selected = []
-              items[c.index].selected = !items[c.index].selected
-              this.context.setProfileCuisines(items)
-              this.setState({cousines:items})
-            }}>
-              <Tile text={c.item.name} selected={c.item.selected}></Tile>
+            <TouchableOpacity
+              onPress={() => {
+                let items = this.state.cousines
+                let selected = []
+                items[c.index].selected = !items[c.index].selected
+                this.context.setProfileCuisines(items)
+                this.setState({cousines:items})
+              }
+            }>
+              <Tile text={c.item.CATEGORY_DESCRIPTION} selected={c.item.selected}></Tile>
             </TouchableOpacity>
           )}
           numColumns={3}
           extraData={this.state}
-          />
+           disableVirtualization/>
         </View>
       </View>
     )

@@ -27,8 +27,13 @@ class AppProvider extends React.Component {
         allergies:[],
         profileId:this.uniqid()
       },
+      socket:null,
+      table:null,
       setProfileName:(name) => {
         this.state.profile.name = name
+      },
+      setTable:(num) => {
+        this.state.table = num
       },
       setProfileCuisines:(cuisines) => {
         this.state.profile.cuisines = cuisines
@@ -38,6 +43,9 @@ class AppProvider extends React.Component {
       },
       setProfile: (profile) => {
         this.state.profile = profile
+      },
+      setSocket: (socket) => {
+        this.state.socket = socket
       }
     }
   }

@@ -69,6 +69,10 @@ class Utills {
     })
   }
 
+  clearBasket() {
+    this.saveItem('myBasket', [])
+  }
+
   getData(url) {
     return new Promise((resolve, reject) => {
       fetch(url, {
@@ -86,6 +90,21 @@ class Utills {
     })
   }
 
+  getFoodCategories() {
+    return new Promise((resolve) => {
+      this.getData(`${this.endPoint}/getCategories`).then((res) => {
+        resolve(res)
+      })
+    })
+  }
+
+  getFoodAllergies() {
+    return new Promise((resolve) => {
+      this.getData(`${this.endPoint}/getFoodAllergies`).then((res) => {
+        resolve(res)
+      })
+    })
+  }
 
   navigate = (url) => {
     window.location.href = url

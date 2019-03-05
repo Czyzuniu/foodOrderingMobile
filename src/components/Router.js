@@ -44,7 +44,7 @@ const MainNavigator = createStackNavigator({
   DineIn: {
     screen:DineIn,
     navigationOptions: {
-      header:<HeaderBar renderRightComponent={true}/>
+      header:<HeaderBar renderRightComponent={true} renderCenterComponent={true} isTableIcon={true}/>
     }
   },
   SelectFood: {

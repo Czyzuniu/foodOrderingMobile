@@ -1,9 +1,12 @@
 import React, { Component,} from 'react';
-import {FlatList, StyleSheet, Text, View, TouchableOpacity, AsyncStorage} from "react-native";
+import {FlatList, StyleSheet, Text, View, TouchableOpacity, AsyncStorage, DeviceEventEmitter} from "react-native";
+import { Dialog, DialogStackedActions } from 'react-native-material-ui';
 import Utills from "../components/Utills";
 import MainMenuCategoryItem from "../components/MainMenuCategoryItem";
 import {Icon} from "react-native-elements";
 import Snackbar from 'react-native-snackbar';
+import { Dropdown } from 'react-native-material-dropdown';
+import AppContext from "../components/AppContext";
 
 
 const menuItems = [
@@ -40,7 +43,10 @@ export default class DineIn extends Component {
     super(props);
     this.state = {
       restaurant:null,
-      isFavourite:false
+      isFavourite:false,
+      showTablePick: false,
+      selectedTable:1,
+      tableList:[]
     }
     this.restaurantId = this.props.navigation.getParam('restaurantId')
 
@@ -53,12 +59,31 @@ export default class DineIn extends Component {
         }
       })
     })
+
+    DeviceEventEmitter.addListener('openTablePick', () => {
+        this.setState({
+          showTablePick:true
+        })
+    });
+
   }
 
   componentDidMount() {
     Utills.getData(`${Utills.endPoint}/getRestaurant?id=${this.restaurantId}`).then((res) => {
+
+      let tableList = []
+
+      console.log(res.resData)
+
+      for (let i = 1; i <= res.resData.RESTAURANT_TABLE_COUNT; i++) {
+        tableList.push({value:i})
+      }
+
+      console.log(tableList)
+
       this.setState({
-        restaurant:res.resData
+        restaurant:res.resData,
+        tableList:tableList
       })
     })
     this.setUpBasket().then((save) => {
@@ -75,7 +100,13 @@ export default class DineIn extends Component {
   }
 
   selectFood(type) {
-    this.props.navigation.push('SelectFood', {foodCategory:type, restaurantId:this.restaurantId})
+    if (this.context.table) {
+      this.props.navigation.push('SelectFood', {foodCategory:type, restaurantId:this.restaurantId})
+    } else {
+      this.setState({
+        showTablePick:true
+      })
+    }
   }
 
   render() {
@@ -155,6 +186,46 @@ export default class DineIn extends Component {
             )}
           />
         </View>
+        {this.state.showTablePick &&
+        <View style={styles.loading}>
+          <Dialog>
+            <Dialog.Content>
+              <View style={{flexDirection: 'column', justifyContent: 'center'}}>
+                <Text style={{fontWeight: 'bold', fontSize: 15}}>Select the table number</Text>
+                <View style={{marginTop: 25}}>
+                  <Dropdown
+                    label='Table number'
+                    value={this.state.selectedTable}
+                    data={this.state.tableList}
+                    onChangeText={(v) => this.setState({selectedTable: v})}
+                  />
+                </View>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <DialogStackedActions
+                actions={['Cancel', 'Ok']}
+                onActionPress={(action) => {
+                  if (action == 'Cancel') {
+                    this.setState({
+                      showTablePick: false
+                    })
+                  } else {
+                    this.setState({
+                      showTablePick:false
+                    })
+                    this.context.setTable(this.state.selectedTable)
+                    Snackbar.show({
+                      title: `You have selected table number ${this.state.selectedTable}`,
+                      duration: Snackbar.LENGTH_SHORT,
+                    });
+                  }
+                }}
+              />
+            </Dialog.Actions>
+          </Dialog>
+        </View>
+        }
       </View>
     );
   }
@@ -172,6 +243,18 @@ const styles = StyleSheet.create({
   },
   categories: {
     flex:0.9
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'#F5FCFF88',
+    zIndex:1
   }
 });
 
+DineIn.contextType = AppContext

@@ -59,6 +59,14 @@ export default class RestaurantOverlay extends Component {
 
     let {restaurantData,restaurantImages, showOverlay, onClose, onDineIn, onPreBook} = this.props
 
+    let categories = []
+
+    if (restaurantData) {
+        categories = restaurantData.categories.map((cat) => {
+          return (cat.CATEGORY_DESCRIPTION)
+        })
+    }
+
     return (
       <Overlay
         isVisible={showOverlay}
@@ -77,8 +85,10 @@ export default class RestaurantOverlay extends Component {
           {restaurantData &&
           <View style={{flex: 1}}>
             <Text h4 style={{alignSelf: 'center'}}>{restaurantData.RESTAURANT_NAME}</Text>
-            <Text h6 style={{alignSelf: 'center'}}>{restaurantData.RESTAURANT_CATEGORIES}</Text>
-            {/*<Text h8>Average review stars</Text>*/}
+            {categories.map((cat) => {
+              return <Text h6 style={{alignSelf: 'center'}}>{cat}</Text>
+
+            })}{/*<Text h8>Average review stars</Text>*/}
             <AirbnbRating
               count={5}
               defaultRating={restaurantData.avgReview.avgReview}

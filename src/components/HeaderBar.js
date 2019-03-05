@@ -14,6 +14,7 @@ import IconBadge from 'react-native-icon-badge';
 
 import { withNavigation } from 'react-navigation';
 import Utills from "./Utills";
+import AppContext from "./AppContext";
 
 class HeaderBar extends React.Component {
 
@@ -27,6 +28,11 @@ class HeaderBar extends React.Component {
 
     DeviceEventEmitter.addListener('addedToBasket', () => {
       Utills.retrieveItem('myBasket').then(data => this.setState({basketSize:data.length}))
+    });
+
+
+    DeviceEventEmitter.addListener('basketCleared', () => {
+       this.setState({basketSize:0})
     });
   }
 
@@ -59,16 +65,37 @@ class HeaderBar extends React.Component {
 
   renderCenterComponent(){
     if (this.props.renderCenterComponent) {
-      return (
-        <SearchBar
-          lightTheme
-          value={this.state.searchField}
-          icon={{ type: 'MaterialIcons', name: 'search' }}
-          onChangeText={(search) => this.setState({searchField: search})}
-          placeholder='Search menu'
-          containerStyle={{backgroundColor:'transparent', borderTopWidth:0, borderBottomWidth:0, width:'100%', display:'flex', alignSelf:'center', marginBottom:5}}
-        />
-      )
+
+      if (this.props.isTableIcon) {
+        return (
+          <Icon
+            name='event-seat'
+            type='MaterialIcons'
+            onPress={() => {
+              DeviceEventEmitter.emit('openTablePick');
+            }}
+          />
+        )
+      } else {
+        return (
+          <SearchBar
+            lightTheme
+            value={this.state.searchField}
+            icon={{type: 'MaterialIcons', name: 'search'}}
+            onChangeText={(search) => this.setState({searchField: search})}
+            placeholder='Search menu'
+            containerStyle={{
+              backgroundColor: 'transparent',
+              borderTopWidth: 0,
+              borderBottomWidth: 0,
+              width: '100%',
+              display: 'flex',
+              alignSelf: 'center',
+              marginBottom: 5
+            }}
+          />
+        )
+      }
     }
   }
 
