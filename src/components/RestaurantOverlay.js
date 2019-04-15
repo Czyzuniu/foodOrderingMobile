@@ -127,15 +127,15 @@ export default class RestaurantOverlay extends Component {
               containerStyle={{margin:10}}
               onPress={onDineIn}
             />
-            <Button
-              type={'solid'}
-              title="Pre-book"
-              containerStyle={{margin:10}}
-              textStyle={{fontSize:20}}
-              onPress={() => {
-                alert('pre book')
-              }}
-            />
+            {/*<Button*/}
+              {/*type={'solid'}*/}
+              {/*title="Pre-book"*/}
+              {/*containerStyle={{margin:10}}*/}
+              {/*textStyle={{fontSize:20}}*/}
+              {/*onPress={() => {*/}
+                {/*alert('pre book')*/}
+              {/*}}*/}
+            {/*/>*/}
           </View>
         </View>
         <DialogInput isDialogVisible={this.state.isReviewDialogVisible}

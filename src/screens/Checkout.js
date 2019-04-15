@@ -94,7 +94,7 @@ export default class Checkout extends Component {
       Utills.clearBasket()
       this.sortOutBasket()
 
-      this.props.navigation.navigate('DineIn')
+      this.props.navigation.navigate('Orders')
       DeviceEventEmitter.emit('basketCleared');
     })
 
@@ -106,7 +106,7 @@ export default class Checkout extends Component {
       this.props.navigation.navigate('DineIn')
     })
 
-    Utills.postData(`${Utills.endPoint}/createOrder`, {table:this.context.table,orderedItems:this.rawBasketData, from:socket.id}).then((res) => {
+    Utills.postData(`${Utills.endPoint}/createOrder`, {table:this.context.table,orderedItems:this.rawBasketData, from:socket.id, profileId:this.context.profile.profileId}).then((res) => {
       this.setState({
         orderStatus:res.orderStatus
       })

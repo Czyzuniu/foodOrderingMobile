@@ -72,7 +72,9 @@ export default class Initial2 extends Component {
                 items[c.index].selected = !items[c.index].selected
                 this.context.setProfileAllergies(items)
                 this.setState({allergies:items})
-              }}>
+              }}
+               testID={'allergies_' + c.index}
+              >
                 <Tile text={c.item.FOOD_ALLERGY_DESCRIPTION} selected={c.item.selected}></Tile>
               </TouchableOpacity>
             )}
@@ -88,6 +90,7 @@ export default class Initial2 extends Component {
         {renderAllergies}
         <Button
           type={'solid'}
+          testID={'initialContinue2'}
           containerStyle={{flex:0.15, width:300, alignSelf:'center'}}
           title="Finish"
           textStyle={{fontSize:20}}

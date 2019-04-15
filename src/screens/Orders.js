@@ -17,30 +17,30 @@ export default class Orders extends Component {
   componentDidMount() {
 
     let id = this.context.profile.profileId
-
-    Utills.getData(`${Utills.endPoint}/getReviewsPerId?id=${id}`).then((data) => {
+    Utills.getData(`${Utills.endPoint}/getOrdersPerId?id=${id}`).then((data) => {
       this.setState({
-        reviews: data
+        orders: data
       })
     })
   }
 
   render() {
-    const {reviews} = this.state
+    const {orders} = this.state
     return (
       <ScrollView style={styles.container}>
-        <Text h4 style={{alignSelf:'center'}}>My Reviews</Text>
         {orders.map((elem) => {
           return (
             <ListItem
-              key={elem.REVIEW_ID.toString()}
+              key={elem.ORDER_ID.toString()}
               title={
                 <View style={{flexDirection: 'column', justifyContent: 'space-around', height:75}}>
                   <View style={{flexDirection:'column'}}>
-                    <Text>Review comments : {elem.REVIEW_COMMENTS}</Text>
+                    <Text>Order ID: {elem.ORDER_ID}</Text>
                   </View>
                   <View style={{flexDirection:'column'}}>
-                    <Text>Reviewed restaurant name : {elem.RESTAURANT_NAME}</Text>
+                    <Text>Order table: {elem.ORDER_TABLE}</Text>
+                    <Text>Restaurant Name: {elem.RESTAURANT_NAME}</Text>
+                    <Text>Order status: {elem.STATUS_DESCRIPTION}</Text>
                   </View>
                   <View style={{flexDirection:'row', alignSelf:'flex-start'}}>
                   </View>

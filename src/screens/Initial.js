@@ -57,15 +57,18 @@ export default class Initial extends Component {
       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
         <Text style={{fontSize: 35, color: 'white', alignSelf: 'center'}}>Welcome</Text>
         <Text h4 style={{color: 'white', alignSelf: 'center', marginTop: 10}}>What is your name?</Text>
-        <Input inputStyle={{color: 'white', fontSize: 20, alignSelf: 'center', textAlign: 'center'}} value={this.state.name} maxLength={25}
+        <Input inputStyle={{color: 'white', fontSize: 20, alignSelf: 'center', textAlign: 'center'}}
+               value={this.state.name} maxLength={25}
                containerStyle={{width: '70%', alignSelf: 'center', margin: 5}}
                onChangeText={(text) => {
                  this.setState({name: text})
                  this.context.setProfileName(text)
                }}
+               testID={'nameInput'}
         />
         <Button
           type={'solid'}
+          testID={'initialContinue'}
           containerStyle={{width: 200, alignSelf: 'center', marginTop: 50}}
           title="Continue"
           textStyle={{fontSize: 20}}

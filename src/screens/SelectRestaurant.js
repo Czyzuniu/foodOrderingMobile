@@ -126,6 +126,7 @@ export default class SelectRestaurant extends Component {
     return (
       <View style={styles.container}>
         <MapView
+          testID={'map'}
           style={styles.map}
           region={{
             latitude: this.state.LATLNG.latitude,

@@ -70,6 +70,7 @@ export default class Initial1 extends Component {
           data={this.state.cousines}
           renderItem={(c) => (
             <TouchableOpacity
+              testID={'item_' + c.index}
               onPress={() => {
                 let items = this.state.cousines
                 let selected = []
@@ -90,11 +91,12 @@ export default class Initial1 extends Component {
 
 
     const renderInitialScreen = (
-      <View style={{flex:1, marginTop:30}}>
+      <View style={{flex:1, marginTop:30}} testID={'cuisinesList'}>
         {renderCuisines}
         <Button
           type={'solid'}
           containerStyle={{flex:0.15, width:300, alignSelf:'center'}}
+          testID={'initialContinue1'}
           title="Continue"
           textStyle={{fontSize:20}}
           onPress={() => {
